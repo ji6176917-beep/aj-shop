@@ -352,7 +352,8 @@
 
         <div>
           <label class="block text-xs text-slate-200 font-medium mb-1" data-i18n="label_deposit_amount">Deposit Amount (in BDT)</label>
-          <input type="number" id="input-deposit-amount" oninput="calculateDepositUsd()" placeholder="Enter Amount" class="w-full bg-[#180308] border border-amber-500/30 rounded-xl px-3 py-2.5 text-white text-sm focus:border-amber-400 focus:outline-none transition">
+          <input type="number" id="input-deposit-amount" min="20" oninput="calculateDepositUsd()" placeholder="Enter Amount" class="w-full bg-[#180308] border border-amber-500/30 rounded-xl px-3 py-2.5 text-white text-sm focus:border-amber-400 focus:outline-none transition">
+          <p id="deposit-min-hint" class="text-[11px] text-amber-300/80 mt-1 font-semibold">Minimum deposit: ৳20</p>
         </div>
 
         <div>
@@ -849,6 +850,14 @@
           </div>
         </div>
 
+        <div class="glass-card p-4 rounded-xl space-y-2">
+          <h3 class="text-xs font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-money-bill-wave text-emerald-400"></i> Minimum Deposit Limit (BDT)</h3>
+          <div class="flex gap-2">
+            <input type="number" id="adm-min-deposit-input" placeholder="20" class="w-32 bg-[#180308] border border-amber-500/30 rounded-lg p-2 text-white text-xs focus:border-amber-400 focus:outline-none font-mono">
+            <button onclick="saveMinDeposit()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 text-gray-950 font-black px-3 py-1.5 rounded-lg text-xs">Save Min Deposit</button>
+          </div>
+        </div>
+
         <div class="bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/35 p-4 rounded-xl shadow-lg flex justify-between items-center">
           <div>
             <span class="text-[10px] uppercase font-bold text-amber-200/70 tracking-wider block">Admin Demo Password:</span>
@@ -1248,6 +1257,7 @@
     let appLogo = localStorage.getItem('cache_aj_appLogo') || "https://api.dicebear.com/7.x/identicon/svg?seed=ajpremium";
     let usdExchangeRate = parseFloat(localStorage.getItem('cache_aj_usdRate')) || 130;
     let metaAbove2000Charge = 25;
+    let minDepositAmount = 20;
 
     let userWallet = { balance: 0, totalDeposit: 0, totalSpent: 0, metaPurchasesCount: 0 };
 
@@ -1371,6 +1381,7 @@
       document.getElementById('new-account-number').placeholder = currentLang === 'en' ? 'Number or Wallet Address' : 'নাম্বার বা ওয়ালেট এড্রেস';
       document.getElementById('input-coin-amount').placeholder = currentLang === 'en' ? 'Example: 20' : 'উদাহরণ: 20';
       document.getElementById('input-deposit-amount').placeholder = currentLang === 'en' ? 'Enter Amount' : 'টাকার পরিমাণ লিখুন';
+      if (typeof updateMinDepositUi === 'function') updateMinDepositUi();
       document.getElementById('history-search-input').placeholder = currentLang === 'en' ? 'Search Order ID (#CS-...)' : 'অর্ডার আইডি সার্চ (#CS-...)';
     }
 
@@ -1496,6 +1507,18 @@
           if (val.metaAbove2000Charge) {
             metaAbove2000Charge = parseFloat(val.metaAbove2000Charge) || 25;
           }
+          if (val.minDepositAmount) {
+            minDepositAmount = parseFloat(val.minDepositAmount) || 20;
+            updateMinDepositUi();
+          }
+        }
+      });
+
+      db.ref('bot_settings/min_deposit').on('value', snapshot => {
+        const v = parseFloat(snapshot.val());
+        if (v > 0) {
+          minDepositAmount = v;
+          updateMinDepositUi();
         }
       });
 
@@ -1671,6 +1694,9 @@
       document.getElementById('view-' + view)?.classList.remove('hidden');
       if (view === 'profile') setupProfileData();
       if (view === 'wallet') updateWalletUi();
+      if (view === 'meta-history') renderMetaHistory();
+      if (view === 'deposit-history') renderDepositHistory();
+      if (view === 'history') renderHistory();
       window.scrollTo(0, 0);
       closeMenu();
     }
@@ -1770,6 +1796,33 @@
       db.ref('appConfig/adminSupportUsername').set(val);
       localStorage.setItem('cache_aj_adminSupport', val);
       alert("Support Admin Username saved to cloud!");
+    }
+
+    function updateMinDepositUi() {
+      const hint = document.getElementById('deposit-min-hint');
+      if (hint) hint.innerText = currentLang === 'en'
+        ? 'Minimum deposit: ৳' + minDepositAmount
+        : 'সর্বনিম্ন ডিপোজিট: ৳' + minDepositAmount + ' টাকা';
+      const inp = document.getElementById('input-deposit-amount');
+      if (inp) inp.min = String(minDepositAmount);
+      const adm = document.getElementById('adm-min-deposit-input');
+      if (adm && document.activeElement !== adm) adm.value = minDepositAmount;
+    }
+
+    async function saveMinDeposit() {
+      const val = parseFloat(document.getElementById('adm-min-deposit-input').value);
+      if (!val || val <= 0) return alert("Enter valid minimum deposit amount!");
+      try {
+        await Promise.all([
+          db.ref('appConfig/minDepositAmount').set(val),
+          db.ref('bot_settings/min_deposit').set(val)
+        ]);
+        minDepositAmount = val;
+        updateMinDepositUi();
+        alert("Minimum deposit updated to ৳" + val);
+      } catch (e) {
+        alert("Failed to save: " + e.message);
+      }
     }
 
     function saveUsdRate() {
@@ -1961,6 +2014,7 @@
 
       try {
         let orderSuccess = false;
+        let workerRefusal = null;
         let finalOrderId = "MB-" + Math.random().toString(36).substring(2, 9).toUpperCase();
 
         try {
@@ -1981,9 +2035,30 @@
           if (result && result.ok === true && result.data) {
             finalOrderId = result.data.id || finalOrderId;
             orderSuccess = true;
+            // Instant local update so "My Orders" shows the new order immediately.
+            if (result.data.id) {
+              allMetaOrdersData = allMetaOrdersData || {};
+              allMetaOrdersData[result.data.id] = result.data;
+              renderMetaHistory();
+            }
+          } else if (result && result.ok === false) {
+            // The worker answered and refused/rolled back. Do NOT fall through to the
+            // Firebase fallback, or the user would be charged again for a failed order.
+            workerRefusal = result;
           }
         } catch (workerErr) {
           console.warn("Worker API unavailable, fallback to Firebase transaction:", workerErr);
+        }
+
+        if (workerRefusal) {
+          currentMetaIdempotencyKey = null;
+          const errMap = {
+            insufficient_balance: "Insufficient Balance in your wallet!",
+            insufficient_stock: "Not enough stock available. Please reduce the quantity.",
+            delivery_failed: "Delivery failed. Your balance has been refunded. Please try again.",
+            product_unavailable: "This product is currently unavailable."
+          };
+          throw new Error(errMap[workerRefusal.error] || workerRefusal.error || "Order could not be completed.");
         }
 
         if (!orderSuccess) {
@@ -2098,6 +2173,7 @@
       const trxId = document.getElementById('input-deposit-trx').value.trim();
 
       if (!amount || amount <= 0) return alert(currentLang === 'en' ? "Please enter a valid deposit amount!" : "সঠিক জমার পরিমাণ লিখুন!");
+      if (amount < minDepositAmount) return alert(currentLang === 'en' ? "Minimum deposit amount is ৳" + minDepositAmount : "সর্বনিম্ন ডিপোজিট ৳" + minDepositAmount + " টাকা!");
       if (!trxId) return alert(currentLang === 'en' ? "Please enter Transaction ID!" : "ট্রানজেকশন আইডি দিন!");
       if (!currentSelectedDepositMethod) return alert("Select a deposit method!");
 
@@ -2245,8 +2321,14 @@
       const el = document.getElementById('meta-history-list');
       el.innerHTML = '';
 
-      let list = Object.values(allMetaOrdersData).filter(m => String(m.userId) === String(tgUser.id));
-      list.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+      let list = Object.values(allMetaOrdersData || {}).filter(m => m && String(m.userId || m.user_id).trim() === String(tgUser.id).trim());
+      // Safari/iOS webviews can't parse "YYYY-MM-DD HH:MM:SS", so normalise before new Date().
+      const safeTs = (v) => {
+        if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2} \d/.test(v)) v = v.replace(' ', 'T');
+        const t = new Date(v || 0).getTime();
+        return Number.isFinite(t) ? t : 0;
+      };
+      list.sort((a, b) => safeTs(b.createdAt || b.date) - safeTs(a.createdAt || a.date));
 
       if (query) list = list.filter(m => (m.id || '').toLowerCase().includes(query) || (m.productName || '').toLowerCase().includes(query));
 
@@ -2257,19 +2339,25 @@
 
       list.forEach(ord => {
         let badgeColor = 'bg-amber-500/20 text-amber-300';
+        let statusLabel = ord.status;
         if (ord.status === 'DELIVERED') badgeColor = 'bg-emerald-500/20 text-emerald-300';
-        else if (ord.status === 'PENDING_STOCK') badgeColor = 'bg-yellow-500/20 text-yellow-300';
+        else if (ord.status === 'PROCESSING' || ord.status === 'PENDING' || ord.status === 'PENDING_STOCK') badgeColor = 'bg-yellow-500/20 text-yellow-300';
+        else if (ord.status === 'DELIVERY_FAILED' || ord.status === 'REJECTED' || ord.status === 'CANCELLED') {
+          badgeColor = 'bg-rose-500/20 text-rose-300';
+          statusLabel = 'FAILED / REFUNDED';
+        }
+        const ordDate = ord.date || (typeof ord.createdAt === 'number' ? new Date(ord.createdAt).toLocaleString() : ord.createdAt) || 'N/A';
         
         el.innerHTML += `
           <div class="glass-card p-3.5 rounded-2xl space-y-1.5 text-xs shadow">
             <div class="flex justify-between items-center font-mono font-bold">
               <span class="text-amber-400">#${ord.id}</span>
-              <span class="text-[10px] ${badgeColor} px-2.5 py-0.5 rounded-full font-bold">${ord.status}</span>
+              <span class="text-[10px] ${badgeColor} px-2.5 py-0.5 rounded-full font-bold">${statusLabel}</span>
             </div>
             <div class="text-slate-100 font-semibold">${ord.productName} (${ord.quantity} Accounts)</div>
             <div class="flex justify-between text-amber-300/80 text-[11px] pt-1.5 border-t border-amber-500/20">
               <span class="font-bold text-amber-400">Total: ৳${ord.total}</span>
-              <span>${ord.date}</span>
+              <span>${ordDate}</span>
             </div>
           </div>
         `;
