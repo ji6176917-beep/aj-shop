@@ -46,76 +46,21 @@
     }
     header, main, footer, .modal-layer { position: relative; z-index: 10; }
 
-    /* ===== META BUY TRUCK ANIMATION ===== */
-    #btn-submit-meta-buy { position: relative; overflow: hidden; }
-    #btn-submit-meta-buy .mb-text-default, #btn-submit-meta-buy .mb-text-success {
-      display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    /* ===== Meta Buy button: lightweight spinner / checkmark (replaces the old truck animation) ===== */
+    #btn-submit-meta-buy .mb-state { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+    #btn-submit-meta-buy .mb-state-loading, #btn-submit-meta-buy .mb-state-done { display: none; }
+    #btn-submit-meta-buy.mb-loading .mb-state-default, #btn-submit-meta-buy.mb-done .mb-state-default { display: none; }
+    #btn-submit-meta-buy.mb-loading .mb-state-loading { display: flex; }
+    #btn-submit-meta-buy.mb-done .mb-state-done { display: flex; color: #100205; font-weight: 900; }
+    #btn-submit-meta-buy:disabled { cursor: wait; opacity: 0.92; }
+    #btn-submit-meta-buy.mb-done { border-color: #22c55e; background: linear-gradient(to right, #4ade80, #22c55e) !important; }
+    .mb-spinner {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2.5px solid rgba(16,2,5,0.25); border-top-color: #100205;
+      animation: mbSpin 0.7s linear infinite;
     }
-    #btn-submit-meta-buy .mb-text-success { display: none; color: #100205; font-weight: 900; }
-    #btn-submit-meta-buy .mb-delivery-scene {
-      display: none; position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
-    }
-    #btn-submit-meta-buy .mb-road-track {
-      position: absolute; left: 5%; right: 5%; bottom: 20%; height: 2.5px;
-      background: rgba(16,2,5,0.7); border-radius: 4px; overflow: hidden;
-    }
-    #btn-submit-meta-buy .mb-road-stripes {
-      position: absolute; inset: 0;
-      background: repeating-linear-gradient(90deg, #f59e0b 0, #f59e0b 9%, transparent 9%, transparent 18%);
-      opacity: 0.6;
-    }
-    #btn-submit-meta-buy .mb-courier {
-      position: absolute; top: 50%; left: 2%; z-index: 4;
-      width: clamp(24px, 11%, 32px); height: auto; aspect-ratio: 54 / 56;
-      transform: translate3d(0,-50%,0); filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
-    }
-    #btn-submit-meta-buy .mb-truck-unit {
-      position: absolute; top: 50%; left: 34%; z-index: 3;
-      width: clamp(58px, 27%, 84px); transform: translate3d(0,-50%,0);
-    }
-    #btn-submit-meta-buy .mb-truck-svg {
-      display: block; width: 100%; height: auto; aspect-ratio: 125 / 54;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.55));
-    }
-    #btn-submit-meta-buy .mb-headlight {
-      position: absolute; right: -26%; top: 26%; width: 42%; height: 38%;
-      background: radial-gradient(ellipse at left, rgba(251,191,36,0.9) 0%, rgba(251,191,36,0) 75%);
-      opacity: 0; pointer-events: none;
-    }
-    #btn-submit-meta-buy.mb-anim-active .mb-text-default { display: none !important; }
-    #btn-submit-meta-buy.mb-anim-active .mb-text-success { display: none !important; }
-    #btn-submit-meta-buy.mb-anim-active .mb-delivery-scene {
-      display: block !important; animation: mbSceneIn 0.25s ease-out both;
-    }
-    #btn-submit-meta-buy.mb-anim-active { cursor: default; }
-    #btn-submit-meta-buy.mb-anim-active .mb-road-stripes { animation: mbRoadSlide 0.5s linear infinite; }
-    #btn-submit-meta-buy.mb-anim-active .mb-wheel { animation: mbSpinWheel 0.4s linear infinite; transform-origin: center; transform-box: fill-box; }
-    #btn-submit-meta-buy.mb-anim-active .mb-courier { animation: mbCourierWalk 1.4s cubic-bezier(0.4,0,0.2,1) 0.15s forwards; }
-    #btn-submit-meta-buy.mb-anim-active .mb-truck-unit { animation: mbTruckDepart 2.6s cubic-bezier(0.65,0,0.35,1) forwards; }
-    #btn-submit-meta-buy.mb-anim-active .mb-headlight { animation: mbHeadlightOn 2.6s forwards; }
-    #btn-submit-meta-buy.mb-completed { border-color: #22c55e !important; background: linear-gradient(to right, #4ade80, #22c55e) !important; }
-    #btn-submit-meta-buy.mb-completed .mb-text-default { display: none !important; }
-    #btn-submit-meta-buy.mb-completed .mb-delivery-scene { display: none !important; }
-    #btn-submit-meta-buy.mb-completed .mb-text-success { display: flex !important; animation: mbPopIn 0.35s cubic-bezier(0.18,0.89,0.32,1.28) forwards; }
-
-    @keyframes mbSceneIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
-    @keyframes mbCourierWalk {
-      0% { transform: translate3d(0,-50%,0) scale(1); opacity: 1; }
-      60% { transform: translate3d(260%,-50%,0) scale(1); opacity: 1; }
-      82% { transform: translate3d(300%,-50%,0) scale(0.55); opacity: 0.65; }
-      100% { transform: translate3d(300%,-50%,0) scale(0); opacity: 0; }
-    }
-    @keyframes mbTruckDepart {
-      0%, 44% { transform: translate3d(0,-50%,0); }
-      52% { transform: translate3d(-1.5%,-50%,0); }
-      60% { transform: translate3d(1%,-50%,0); }
-      70% { transform: translate3d(6%,-50%,0); }
-      100% { transform: translate3d(300%,-50%,0); }
-    }
-    @keyframes mbHeadlightOn { 0%, 50% { opacity: 0; } 60%, 100% { opacity: 1; } }
-    @keyframes mbSpinWheel { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    @keyframes mbRoadSlide { from { transform: translateX(0); } to { transform: translateX(-18%); } }
-    @keyframes mbPopIn { 0% { opacity: 0; transform: scale(0.85); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes mbSpin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .mb-spinner { animation-duration: 1.6s; } }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-black">
@@ -476,33 +421,11 @@
         </div>
 
         <button id="btn-submit-meta-buy" onclick="executeMetaPurchase()" class="w-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:brightness-110 text-gray-950 font-black py-3.5 rounded-xl shadow-lg active:scale-[0.99] transition">
-          <span class="mb-text-default" data-i18n="btn_buy_now">BUY NOW</span>
-          <span class="mb-delivery-scene" aria-hidden="true">
-            <span class="mb-road-track"><span class="mb-road-stripes"></span></span>
-            <svg class="mb-courier" viewBox="0 0 54 56" preserveAspectRatio="xMidYMid meet" fill="none">
-              <path d="M14 10C14 7.24 16.24 5 19 5H24C26.76 5 29 7.24 29 10H14Z" fill="#d97706"/>
-              <circle cx="21" cy="13" r="5" fill="#fcd34d"/>
-              <path d="M15 19C15 17.9 15.9 17 17 17H26C27.1 17 28 17.9 28 19L27 34H16L15 19Z" fill="#f59e0b"/>
-              <line x1="18" y1="34" x2="16" y2="48" stroke="#334155" stroke-width="3.5" stroke-linecap="round"/>
-              <line x1="24" y1="34" x2="26" y2="48" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round"/>
-              <g transform="translate(25, 18)"><rect width="18" height="17" rx="2" fill="#b45309" stroke="#78350f"/><line x1="9" y1="0" x2="9" y2="17" stroke="#fde68a" stroke-width="2.5" opacity="0.9"/></g>
-            </svg>
-            <span class="mb-truck-unit">
-              <svg class="mb-truck-svg" viewBox="0 0 125 54" preserveAspectRatio="xMidYMid meet" fill="none">
-                <rect x="2" y="6" width="75" height="34" rx="4" fill="#180308" stroke="#f59e0b" stroke-width="1.8"/>
-                <path d="M12 16L32 16" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-                <path d="M77 12H98C103 12 107 16 110 20L118 28C119 29 120 31 120 33V40H77V12Z" fill="#b45309" stroke="#f59e0b" stroke-width="1.5"/>
-                <path d="M80 15H96L107 27H80V15Z" fill="#fef3c7" opacity="0.95"/>
-                <circle cx="119" cy="30" r="3" fill="#fde047" stroke="#ca8a04" stroke-width="1"/>
-                <g transform="translate(24, 40)"><circle r="8" fill="#090d16" stroke="#475569" stroke-width="2.5"/><g class="mb-wheel"><circle r="4" fill="#f59e0b"/></g></g>
-                <g transform="translate(98, 40)"><circle r="8" fill="#090d16" stroke="#475569" stroke-width="2.5"/><g class="mb-wheel"><circle r="4" fill="#f59e0b"/></g></g>
-              </svg>
-              <span class="mb-headlight"></span>
-            </span>
-          </span>
-          <span class="mb-text-success">
+          <span class="mb-state mb-state-default" data-i18n="btn_buy_now">BUY NOW</span>
+          <span class="mb-state mb-state-loading" aria-live="polite"><span class="mb-spinner" aria-hidden="true"></span><span>Confirming...</span></span>
+          <span class="mb-state mb-state-done">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#100205" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            <span>ORDER PLACED!</span>
+            <span>ORDER CONFIRMED</span>
           </span>
         </button>
       </div>
@@ -513,8 +436,8 @@
       <div class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto text-3xl border border-amber-400/40 shadow-lg">
         <i class="fa-solid fa-boxes-packing"></i>
       </div>
-      <h2 class="text-2xl font-black text-white" data-i18n="meta_success_title">Order Placed Successfully!</h2>
-      <p class="text-xs text-amber-200 max-w-xs mx-auto">Your purchased accounts file will be sent directly through the Telegram bot.</p>
+      <h2 class="text-2xl font-black text-white" data-i18n="meta_success_title">Order Confirmed!</h2>
+      <p class="text-xs text-amber-200 max-w-xs mx-auto">Your order is confirmed. One file with all your accounts is being delivered to your Telegram chat — you can keep using the app meanwhile.</p>
       
       <div onclick="copyMetaOrderId()" class="glass-card hover:border-amber-400 p-4 rounded-2xl max-w-xs mx-auto shadow-md cursor-pointer transition active:scale-95 group">
         <p class="text-[11px] text-amber-200" data-i18n="label_meta_order_id">Meta Order ID:</p>
@@ -1292,7 +1215,9 @@
     ];
     let allOrdersData = JSON.parse(localStorage.getItem('cache_aj_ordersData')) || {};
     let allDepositsData = {};
-    let allMetaOrdersData = {};
+    let allMetaOrdersData = {};      // ADMIN ONLY (loaded after the admin password is accepted)
+    let myMetaOrdersData = {};       // customer: ONLY this user's orders (metaBuyOrdersByUser/{id})
+    const metaSummaryRefs = {};      // productId -> attached metaStockSummary listener
 
     let currentSelectedCoin = null;
     let currentCoinMin = 1;
@@ -1302,8 +1227,7 @@
     let currentSelectedMetaProduct = null;
     let currentMetaIdempotencyKey = null;
     let metaPurchaseInFlight = false;
-    let metaStockAvailability = {};
-    let metaStockRaw = {};
+    let metaStockAvailability = {}; // { [productId]: availableCount } — from the backend / metaStockSummary (never from account records)
     let currentSelectedDepositMethod = null;
     let admSelectedUserObj = null;
     let admBalanceActionType = 'ADD';
@@ -1335,7 +1259,7 @@
         label_select_deposit_method: "Select Deposit Method", send_money_to: "Send Money To:", label_deposit_amount: "Deposit Amount (BDT)",
         label_trx_id: "Transaction ID (TrxID / TxID)", btn_confirm_deposit: "Confirm Deposit", deposit_success_title: "Deposit Submitted!",
         label_deposit_id: "Your Deposit ID:", deposit_history_heading: "Deposit History", meta_store_heading: "Meta Buy Store",
-        label_how_many_accounts: "How many accounts do you want?", btn_buy_now: "BUY NOW", meta_success_title: "Order Placed Successfully!",
+        label_how_many_accounts: "How many accounts do you want?", btn_buy_now: "BUY NOW", meta_success_title: "Order Confirmed!",
         label_meta_order_id: "Meta Order ID:", meta_history_heading: "Meta Buy History", stock_count: "Stock:",
         label_subtotal: "Subtotal:", label_service_charge: "Service Charge:", label_total_payable: "Total Payable:"
       },
@@ -1364,7 +1288,7 @@
         label_select_deposit_method: "ডিপোজিট মেথড সিলেক্ট করুন", send_money_to: "টাকা পাঠানোর নাম্বার / আইডি:", label_deposit_amount: "ডিপোজিট পরিমাণ (BDT)",
         label_trx_id: "ট্রানজেকশন আইডি (TrxID / TxID)", btn_confirm_deposit: "ডিপোজিট কনফার্ম করুন", deposit_success_title: "ডিপোজিট জমা হয়েছে!",
         label_deposit_id: "আপনার ডিপোজিট আইডি:", deposit_history_heading: "ডিপোজিট হিস্ট্রি", meta_store_heading: "মেটা বাই স্টোর",
-        label_how_many_accounts: "কতটি একাউন্ট নিতে চান?", btn_buy_now: "এখনই ক্রয় করুন", meta_success_title: "অর্ডার সফল হয়েছে!",
+        label_how_many_accounts: "কতটি একাউন্ট নিতে চান?", btn_buy_now: "এখনই ক্রয় করুন", meta_success_title: "অর্ডার নিশ্চিত হয়েছে!",
         label_meta_order_id: "মেটা অর্ডার আইডি:", meta_history_heading: "মেটা বাই হিস্ট্রি", stock_count: "স্টক:",
         label_subtotal: "সাবটোটাল:", label_service_charge: "সার্ভিস চার্জ:", label_total_payable: "মোট প্রদেয়:"
       }
@@ -1565,25 +1489,18 @@
         }
         renderMetaProducts();
         renderAdmMetaProducts();
+        attachMetaSummaryListeners();
       });
 
-      db.ref('metaStock').on('value', snapshot => {
-        metaStockRaw = snapshot.val() || {};
-        refreshMetaStockAvailability();
-      });
+      // Stock: the browser NEVER listens to metaStock (account credentials). Counts come from the
+      // backend (/meta-products) and the tiny metaStockSummary/{productId} nodes.
+      fetchMetaProductsFromApi();
 
-      db.ref('deposits').on('value', snapshot => {
-        allDepositsData = snapshot.val() || {};
-        renderDepositHistory();
-        renderAdmDepositRequests();
-      });
-
-      db.ref('metaBuyOrders').on('value', snapshot => {
-        allMetaOrdersData = snapshot.val() || {};
+      // Meta history: ONLY this user's compact index, never the global metaBuyOrders tree.
+      db.ref('metaBuyOrdersByUser/' + tgUser.id).on('value', snapshot => {
+        myMetaOrdersData = snapshot.val() || {};
         renderMetaHistory();
-        renderAdmMetaOrders();
         updateWalletUi();
-        refreshMetaStockAvailability();
       });
 
       db.ref('coinsData').on('value', snapshot => {
@@ -1665,8 +1582,7 @@
       });
       document.getElementById('wallet-stat-coin-sold').innerText = '৳ ' + totalCoinSold.toFixed(2);
 
-      const myMetaOrders = Object.values(allMetaOrdersData).filter(o => String(o.userId) === String(tgUser.id));
-      document.getElementById('stat-total-meta').innerText = myMetaOrders.length;
+      document.getElementById('stat-total-meta').innerText = Object.keys(myMetaOrdersData || {}).length;
     }
 
     function setupProfileData() {
@@ -1695,7 +1611,8 @@
       if (view === 'profile') setupProfileData();
       if (view === 'wallet') updateWalletUi();
       if (view === 'meta-history') renderMetaHistory();
-      if (view === 'deposit-history') renderDepositHistory();
+      if (view === 'meta-buy') fetchMetaProductsFromApi();
+      if (view === 'deposit-history') { renderDepositHistory(); loadMyDeposits(); }
       if (view === 'history') renderHistory();
       window.scrollTo(0, 0);
       closeMenu();
@@ -1744,6 +1661,7 @@
       const entered = document.getElementById('admin-auth-input').value.trim();
       if (entered === FIXED_ADMIN_PASS || entered === demoAdminPass) {
         closeAdminAuthModal();
+        attachAdminListeners();
         navigate('admin');
       } else {
         alert("Incorrect Password!");
@@ -1860,55 +1778,103 @@
     // ==========================================
     // META BUY STORE & PURCHASE
     // ==========================================
-    const META_ACTIVE_ORDER_STATUSES = new Set(['PROCESSING', 'PENDING', 'NEEDS_MANUAL_REVIEW']);
-
-    function computeMetaStockAvailability() {
-      const counts = {};
-      Object.keys(metaStockRaw || {}).forEach(productId => {
-        const items = metaStockRaw[productId] || {};
-        let available = 0;
-        Object.values(items).forEach(it => {
-          if (!it) return;
-          if (it.status === 'AVAILABLE') {
-            available++;
-          } else if (it.status === 'RESERVED') {
-            const orderId = it.orderId || '';
-            const order = orderId ? (allMetaOrdersData || {})[orderId] : null;
-            const isActive = !!order && META_ACTIVE_ORDER_STATUSES.has(order.status);
-            if (!isActive) available++;
-          }
-        });
-        counts[productId] = available;
-      });
-      return counts;
+    // ---- Meta stock: lightweight, credential-free ----
+    let metaRenderTimer = null;
+    function scheduleMetaStockRender() {
+      if (metaRenderTimer) return;
+      metaRenderTimer = setTimeout(() => {
+        metaRenderTimer = null;
+        refreshMetaStockAvailability();
+      }, 120); // debounce: many summary updates -> one render
     }
 
     function refreshMetaStockAvailability() {
-      metaStockAvailability = computeMetaStockAvailability();
       renderMetaProducts();
+      renderAdmMetaProducts();
       if (currentSelectedMetaProduct && metaStockAvailability[currentSelectedMetaProduct.id] !== undefined) {
         currentSelectedMetaProduct.stock = metaStockAvailability[currentSelectedMetaProduct.id];
+        currentSelectedMetaProduct.stockKnown = true;
         const badge = document.getElementById('meta-purchase-stock-badge');
         if (badge) badge.innerText = `Stock: ${currentSelectedMetaProduct.stock}`;
         calculateMetaPurchase();
       }
     }
 
+    // Authoritative real stock from the backend (it also builds the summary on first use).
+    let metaProductsFetchedAt = 0;
+    async function fetchMetaProductsFromApi(force) {
+      if (!force && Date.now() - metaProductsFetchedAt < 4000) return;
+      metaProductsFetchedAt = Date.now();
+      try {
+        const res = await fetch(`${META_BUY_API_BASE}/meta-products`);
+        const json = await res.json();
+        if (json && json.ok && Array.isArray(json.data)) {
+          json.data.forEach(p => {
+            if (p && p.id && typeof p.availableStock === 'number') metaStockAvailability[p.id] = p.availableStock;
+          });
+          scheduleMetaStockRender();
+        }
+      } catch (e) { /* keep showing the last known numbers */ }
+    }
+
+    // Realtime stock: one tiny node per product (a few numbers) — not the inventory.
+    function attachMetaSummaryListeners() {
+      Object.keys(metaProductsData || {}).forEach(id => {
+        if (metaSummaryRefs[id]) return;
+        metaSummaryRefs[id] = true;
+        db.ref('metaStockSummary/' + id).on('value', snap => {
+          const v = snap.val();
+          if (v && typeof v.availableCount === 'number') {
+            metaStockAvailability[id] = Math.max(0, v.availableCount);
+            scheduleMetaStockRender();
+          }
+        });
+      });
+    }
+
+    // Deposit history is loaded per user on demand (the Deposit workflow itself is unchanged).
+    async function loadMyDeposits() {
+      try {
+        const res = await fetch(`${META_BUY_API_BASE}/deposit-history?user_id=${encodeURIComponent(tgUser.id)}`);
+        const json = await res.json();
+        if (json && json.ok && Array.isArray(json.data)) {
+          json.data.forEach(d => { if (d && d.id) allDepositsData[d.id] = d; });
+          renderDepositHistory();
+        }
+      } catch (e) { /* offline: show what we have */ }
+    }
+
+    // Admin-only full listeners — attached only after the admin password is accepted.
+    let adminListenersAttached = false;
+    function attachAdminListeners() {
+      if (adminListenersAttached) return;
+      adminListenersAttached = true;
+      db.ref('deposits').on('value', snapshot => {
+        allDepositsData = snapshot.val() || {};
+        renderDepositHistory();
+        renderAdmDepositRequests();
+      });
+      db.ref('metaBuyOrders').on('value', snapshot => {
+        allMetaOrdersData = snapshot.val() || {};
+        renderAdmMetaOrders();
+      });
+    }
+
     function renderMetaProducts() {
       const el = document.getElementById('meta-products-list');
-      el.innerHTML = '';
       const entries = Object.entries(metaProductsData || {}).filter(([, p]) => p && p.active !== false);
       if (!entries.length) {
         el.innerHTML = `<p class="text-xs text-amber-200/60 text-center py-5">No Meta products configured yet.</p>`;
         return;
       }
+      let html = '';
       entries.forEach(([id, prod]) => {
-        const liveStock = metaStockAvailability[id];
-        const stockDisplay = (liveStock !== undefined) ? liveStock : (prod.stock ?? '—');
-        el.innerHTML += `
+        const live = metaStockAvailability[id];
+        const stockDisplay = (live !== undefined) ? live : '…';
+        html += `
           <div class="glass-card rounded-2xl p-4 flex items-center justify-between shadow-lg hover:border-amber-400/50 transition">
             <div class="flex items-center gap-3">
-              <img src="${prod.logo}" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(prod.name)}'" class="w-12 h-12 rounded-xl object-cover border border-amber-400/40 bg-[#180308]">
+              <img src="${prod.logo}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(prod.name)}'" class="w-12 h-12 rounded-xl object-cover border border-amber-400/40 bg-[#180308]">
               <div>
                 <h4 class="text-sm font-bold text-white">${prod.name}</h4>
                 <p class="text-xs text-amber-400 font-bold font-mono">৳${prod.unitPrice} <span class="text-[10px] text-amber-200 font-normal">/ Account</span></p>
@@ -1919,13 +1885,16 @@
           </div>
         `;
       });
+      el.innerHTML = html;
     }
 
     function openMetaPurchase(prodId) {
       const prod = metaProductsData[prodId];
       if (!prod) return;
       const liveStock = metaStockAvailability[prodId];
-      currentSelectedMetaProduct = { ...prod, id: prodId, stock: (liveStock !== undefined ? liveStock : prod.stock) };
+      currentSelectedMetaProduct = { ...prod, id: prodId, stock: (liveStock !== undefined ? liveStock : 0), stockKnown: liveStock !== undefined };
+      setMetaBtnState('idle');
+      fetchMetaProductsFromApi(true);
 
       document.getElementById('meta-purchase-title').innerText = currentSelectedMetaProduct.name;
       document.getElementById('meta-purchase-logo').src = currentSelectedMetaProduct.logo;
@@ -1934,7 +1903,7 @@
       };
       document.getElementById('meta-purchase-name').innerText = currentSelectedMetaProduct.name;
       document.getElementById('meta-purchase-unit-price').innerText = `৳${currentSelectedMetaProduct.unitPrice} / Account`;
-      document.getElementById('meta-purchase-stock-badge').innerText = `Stock: ${currentSelectedMetaProduct.stock}`;
+      document.getElementById('meta-purchase-stock-badge').innerText = currentSelectedMetaProduct.stockKnown ? `Stock: ${currentSelectedMetaProduct.stock}` : 'Stock: …';
       document.getElementById('meta-purchase-desc').innerText = currentSelectedMetaProduct.desc || "Verified high quality accounts with instant delivery.";
 
       const qtyInput = document.getElementById('input-meta-qty');
@@ -1962,8 +1931,8 @@
       const stock = currentSelectedMetaProduct.stock || 0;
       const unit = currentSelectedMetaProduct.unitPrice || 0;
 
-      if (qty > stock) {
-        errElem.innerText = `Current stock (${stock}) exceeded. Order will be queued as backlog.`;
+      if (currentSelectedMetaProduct.stockKnown !== false && qty > stock) {
+        errElem.innerText = `Only ${stock} accounts are currently available.`;
         errElem.classList.remove('hidden');
       } else {
         errElem.classList.add('hidden');
@@ -1980,6 +1949,16 @@
       document.getElementById('meta-calc-final').innerText = `৳ ${finalTotal.toFixed(2)}`;
     }
 
+    // Button states: 'idle' | 'loading' | 'done'. The spinner only covers the FAST confirmation request;
+    // CSV generation / Telegram delivery happen on the server afterwards and never block the UI.
+    function setMetaBtnState(state) {
+      const btn = document.getElementById('btn-submit-meta-buy');
+      if (!btn) return;
+      btn.classList.toggle('mb-loading', state === 'loading');
+      btn.classList.toggle('mb-done', state === 'done');
+      btn.disabled = (state === 'loading');
+    }
+
     async function executeMetaPurchase() {
       if (!currentSelectedMetaProduct) return;
       if (metaPurchaseInFlight) return;
@@ -1992,6 +1971,8 @@
       const serviceCharge = getMetaServiceCharge(gross);
       const finalTotal = gross + serviceCharge;
 
+      // Frontend balance check is a convenience only — the backend re-validates balance, price,
+      // quantity and stock itself and is the sole authority on the purchase.
       if (userWallet.balance < finalTotal) {
         if (confirm("Insufficient Balance in your wallet! Do you want to deposit money now?")) {
           navigate('deposit');
@@ -2003,24 +1984,18 @@
         currentMetaIdempotencyKey = "MBC-" + tgUser.id + "-" + Date.now() + "-" + Math.random().toString(36).substring(2, 10);
       }
 
-      const btn = document.getElementById('btn-submit-meta-buy');
       metaPurchaseInFlight = true;
-      btn.disabled = true;
-      btn.classList.remove('mb-completed');
-      btn.classList.add('mb-anim-active');
-      const mbAnimStart = Date.now();
-      const MB_MIN_VISIBLE_MS = 2600;
-      const mbSleep = (ms) => new Promise(r => setTimeout(r, ms));
+      setMetaBtnState('loading'); // instant feedback, button disabled
 
       try {
-        let orderSuccess = false;
-        let workerRefusal = null;
-        let finalOrderId = "MB-" + Math.random().toString(36).substring(2, 9).toUpperCase();
-
+        const ctrl = new AbortController();
+        const abortTimer = setTimeout(() => ctrl.abort(), 30000);
+        let res;
         try {
-          const res = await fetch(`${META_BUY_API_BASE}/meta-buy`, {
+          res = await fetch(`${META_BUY_API_BASE}/meta-buy`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            signal: ctrl.signal,
             body: JSON.stringify({
               product_id: currentSelectedMetaProduct.id,
               quantity: qty,
@@ -2031,86 +2006,76 @@
               init_data: (tg && tg.initData) || ""
             })
           });
-          const result = await res.json();
-          if (result && result.ok === true && result.data) {
-            finalOrderId = result.data.id || finalOrderId;
-            orderSuccess = true;
-            // Instant local update so "My Orders" shows the new order immediately.
-            if (result.data.id) {
-              allMetaOrdersData = allMetaOrdersData || {};
-              allMetaOrdersData[result.data.id] = result.data;
-              renderMetaHistory();
+        } finally {
+          clearTimeout(abortTimer);
+        }
+
+        let result = null;
+        try {
+          result = await res.json();
+        } catch (parseErr) {
+          throw new Error("Server returned an unexpected response. Please try again.");
+        }
+
+        if (!result || result.ok !== true || !result.data) {
+          const errorMessages = {
+            invalid_user: "Could not verify your Telegram account. Please reopen the app and try again.",
+            invalid_request: "Invalid purchase request. Please check the quantity and try again.",
+            product_unavailable: "This product is currently unavailable.",
+            invalid_product_price: "This product has an invalid price. Please contact support.",
+            insufficient_balance: "Insufficient balance in your wallet. Please deposit money first.",
+            insufficient_stock: "Not enough stock available right now. Please try a smaller quantity.",
+            delivery_failed: "Delivery could not be completed. Your balance has been refunded automatically. Please try again.",
+            internal_error: "Something went wrong on our side. You were not charged. Please try again."
+          };
+          const errKey = result && result.error;
+          let message = errorMessages[errKey] || "Purchase could not be completed. Please try again.";
+          if (errKey === "insufficient_stock" && typeof result.available === 'number') {
+            message = `Only ${result.available} accounts are currently available.`;
+            metaStockAvailability[currentSelectedMetaProduct.id] = result.available; // show the real number
+            currentSelectedMetaProduct.stock = result.available;
+            currentSelectedMetaProduct.stockKnown = true;
+            scheduleMetaStockRender();
+          }
+
+          setMetaBtnState('idle'); // failure restores the button immediately
+          if (errKey === "insufficient_balance") {
+            if (confirm(message + "\n\nDo you want to deposit money now?")) {
+              navigate('deposit');
             }
-          } else if (result && result.ok === false) {
-            // The worker answered and refused/rolled back. Do NOT fall through to the
-            // Firebase fallback, or the user would be charged again for a failed order.
-            workerRefusal = result;
+          } else {
+            alert(message);
           }
-        } catch (workerErr) {
-          console.warn("Worker API unavailable, fallback to Firebase transaction:", workerErr);
-        }
-
-        if (workerRefusal) {
           currentMetaIdempotencyKey = null;
-          const errMap = {
-            insufficient_balance: "Insufficient Balance in your wallet!",
-            insufficient_stock: "Not enough stock available. Please reduce the quantity.",
-            delivery_failed: "Delivery failed. Your balance has been refunded. Please try again.",
-            product_unavailable: "This product is currently unavailable."
-          };
-          throw new Error(errMap[workerRefusal.error] || workerRefusal.error || "Order could not be completed.");
+          return;
         }
 
-        if (!orderSuccess) {
-          const userWalletRef = db.ref('wallets/' + tgUser.id);
-          const txRes = await userWalletRef.transaction(wallet => {
-            if (!wallet) return wallet;
-            if ((wallet.balance || 0) < finalTotal) return;
-            wallet.balance = (wallet.balance || 0) - finalTotal;
-            wallet.totalSpent = (wallet.totalSpent || 0) + finalTotal;
-            wallet.metaPurchasesCount = (wallet.metaPurchasesCount || 0) + qty;
-            return wallet;
-          });
-
-          if (!txRes.committed) {
-            throw new Error("Insufficient Balance or Transaction Conflict!");
+        // ORDER CONFIRMED (stock reserved + wallet debited + order created). Delivery continues server-side.
+        const orderId = result.data.id;
+        try {
+          myMetaOrdersData[orderId] = result.data; // instant local entry; the realtime index keeps it current
+          renderMetaHistory();
+          if (typeof result.walletBalance === 'number') {
+            userWallet.balance = result.walletBalance;
+            updateWalletUi();
           }
-
-          const orderRecord = {
-            id: finalOrderId,
-            userId: tgUser.id,
-            username: tgUser.username || "N/A",
-            product_id: currentSelectedMetaProduct.id,
-            productName: currentSelectedMetaProduct.name,
-            quantity: qty,
-            unitPrice: unit,
-            subtotal: gross,
-            serviceCharge: serviceCharge,
-            total: finalTotal.toFixed(2),
-            status: "PROCESSING",
-            createdAt: Date.now(),
-            date: new Date().toLocaleString()
-          };
-
-          await db.ref('metaBuyOrders/' + finalOrderId).set(orderRecord);
-          orderSuccess = true;
-        }
-
-        const mbElapsed = Date.now() - mbAnimStart;
-        if (mbElapsed < MB_MIN_VISIBLE_MS) await mbSleep(MB_MIN_VISIBLE_MS - mbElapsed);
-        btn.classList.remove('mb-anim-active');
-        btn.classList.add('mb-completed');
-        await mbSleep(650);
-        document.getElementById('success-meta-id-display').innerText = '#' + finalOrderId;
+        } catch (localErr) { console.warn('Local Meta order insert failed:', localErr); }
+        setMetaBtnState('done');
+        document.getElementById('success-meta-id-display').innerText = '#' + orderId;
         currentMetaIdempotencyKey = null;
         navigate('meta-success');
       } catch (err) {
-        btn.classList.remove('mb-anim-active', 'mb-completed');
-        alert("Purchase error: " + err.message);
+        setMetaBtnState('idle');
+        // The key is kept on purpose: if the request actually reached the server, retrying with the
+        // same key returns the SAME order instead of buying (and charging) twice.
+        const aborted = err && err.name === 'AbortError';
+        alert(aborted
+          ? "The connection is slow. Your order may already be confirmed — please check Meta Buy History before trying again."
+          : "Purchase error: " + err.message);
       } finally {
         metaPurchaseInFlight = false;
-        btn.disabled = false;
-        setTimeout(() => btn.classList.remove('mb-anim-active', 'mb-completed'), 800);
+        const b = document.getElementById('btn-submit-meta-buy');
+        if (b) b.disabled = false;
       }
     }
 
@@ -2204,6 +2169,7 @@
         };
 
         await db.ref('deposits/' + depositId).set(depData);
+        allDepositsData[depositId] = depData;
 
         const safeDepId = escapeHtml(depositId);
         const safeUser = escapeHtml(tgUser.username || 'N/A');
@@ -2321,14 +2287,16 @@
       const el = document.getElementById('meta-history-list');
       el.innerHTML = '';
 
-      let list = Object.values(allMetaOrdersData || {}).filter(m => m && String(m.userId || m.user_id).trim() === String(tgUser.id).trim());
+      // Only this user's orders (per-user index) — never the global tree.
+      let list = Object.values(myMetaOrdersData || {}).filter(m => m && typeof m === 'object');
       // Safari/iOS webviews can't parse "YYYY-MM-DD HH:MM:SS", so normalise before new Date().
       const safeTs = (v) => {
+        if (typeof v === 'number') return v;
         if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2} \d/.test(v)) v = v.replace(' ', 'T');
         const t = new Date(v || 0).getTime();
         return Number.isFinite(t) ? t : 0;
       };
-      list.sort((a, b) => safeTs(b.createdAt || b.date) - safeTs(a.createdAt || a.date));
+      list.sort((a, b) => (Number(b.createdAtMs) || safeTs(b.createdAt || b.date)) - (Number(a.createdAtMs) || safeTs(a.createdAt || a.date)));
 
       if (query) list = list.filter(m => (m.id || '').toLowerCase().includes(query) || (m.productName || '').toLowerCase().includes(query));
 
@@ -2338,13 +2306,27 @@
       }
 
       list.forEach(ord => {
+        // Customer-facing states: DELIVERED / DELIVERY FAILED / REJECTED / CANCELLED. There is NO "Pending" for Meta Buy.
+        // An order whose delivery is still being sent by the server is simply shown as confirmed.
         let badgeColor = 'bg-amber-500/20 text-amber-300';
-        let statusLabel = ord.status;
-        if (ord.status === 'DELIVERED') badgeColor = 'bg-emerald-500/20 text-emerald-300';
-        else if (ord.status === 'PROCESSING' || ord.status === 'PENDING' || ord.status === 'PENDING_STOCK') badgeColor = 'bg-yellow-500/20 text-yellow-300';
-        else if (ord.status === 'DELIVERY_FAILED' || ord.status === 'REJECTED' || ord.status === 'CANCELLED') {
+        let statusLabel = 'CONFIRMED';
+        let statusNote = 'Delivery in progress';
+        if (ord.status === 'DELIVERED') {
+          badgeColor = 'bg-emerald-500/20 text-emerald-300';
+          statusLabel = 'DELIVERED';
+          statusNote = '';
+        } else if (ord.status === 'DELIVERY_FAILED') {
           badgeColor = 'bg-rose-500/20 text-rose-300';
-          statusLabel = 'FAILED / REFUNDED';
+          statusLabel = 'DELIVERY FAILED';
+          statusNote = 'Refunded automatically';
+        } else if (ord.status === 'REJECTED') {
+          badgeColor = 'bg-rose-500/20 text-rose-300';
+          statusLabel = 'REJECTED';
+          statusNote = 'Refunded';
+        } else if (ord.status === 'CANCELLED') {
+          badgeColor = 'bg-rose-500/20 text-rose-300';
+          statusLabel = 'CANCELLED';
+          statusNote = 'Refunded';
         }
         const ordDate = ord.date || (typeof ord.createdAt === 'number' ? new Date(ord.createdAt).toLocaleString() : ord.createdAt) || 'N/A';
         
@@ -2355,6 +2337,7 @@
               <span class="text-[10px] ${badgeColor} px-2.5 py-0.5 rounded-full font-bold">${statusLabel}</span>
             </div>
             <div class="text-slate-100 font-semibold">${ord.productName} (${ord.quantity} Accounts)</div>
+            ${statusNote ? `<div class="text-[10px] text-amber-200/70">${statusNote}</div>` : ''}
             <div class="flex justify-between text-amber-300/80 text-[11px] pt-1.5 border-t border-amber-500/20">
               <span class="font-bold text-amber-400">Total: ৳${ord.total}</span>
               <span>${ordDate}</span>
@@ -2533,7 +2516,7 @@
         const liveStock = metaStockAvailability[id];
         const stockLabel = (liveStock !== undefined)
           ? `Real Stock: ${liveStock}`
-          : `Stock: ${p.stock ?? '—'} (no stock uploaded)`;
+          : `Stock: … (loading real stock)`;
         el.innerHTML += `
           <div class="bg-[#180308] p-3 rounded-xl border border-amber-500/30 flex justify-between items-center text-xs">
             <div class="flex items-center gap-2">
@@ -2645,7 +2628,7 @@
               <span class="font-bold text-amber-400">Paid: ৳${ord.total}</span>
               <span>${ord.date}</span>
             </div>
-            ${ord.status !== 'DELIVERED' ? `
+            ${['PENDING', 'NEEDS_MANUAL_REVIEW'].includes(ord.status) ? `
               <button onclick="admMarkMetaDelivered('${ord.id}')" class="w-full mt-1.5 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-400/40 py-1.5 rounded-lg text-xs font-bold">Mark as Delivered</button>
             ` : ''}
           </div>
