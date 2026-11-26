@@ -2804,15 +2804,6 @@
       window.currentGrossPayout = total;
 
       let finalPayout = total;
-      const selectedPaymentRadio = document.querySelector('input[name="order-selected-payment"]:checked');
-      if (selectedPaymentRadio && total > 0) {
-        const selectedMethodName = (selectedPaymentRadio.value.split(' - ')[0] || '').trim().toLowerCase();
-        if (['bkash', 'bikash', 'nagad', 'rocket'].some(kw => selectedMethodName.includes(kw))) {
-          const charge = total <= 500 ? 5 : (total * 0.02);
-          finalPayout = total - charge;
-          if (finalPayout < 0) finalPayout = 0;
-        }
-      }
       document.getElementById('calculated-payout-text').innerText = '৳ ' + finalPayout.toFixed(2);
     }
 
